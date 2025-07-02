@@ -15,9 +15,20 @@ window.addEventListener('mousemove', (event) => {
 // Scene
 const scene = new THREE.Scene()
 
-// Red Cube
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: '#ff0000' })
+const geometry = new THREE.BufferGeometry()
+
+const count = 50
+const positionArray = new Float32Array(count*3*3)
+for (let i=0; i< count *3*3; i++) {
+    positionArray[i] = (Math.random() - 0.5) * 4
+}
+
+const positionAttribute = new THREE.BufferAttribute(positionArray, 3)
+geometry.setAttribute('position', positionAttribute)
+
+
+geometry.setAttribute('position', positionAttribute)
+const material = new THREE.MeshBasicMaterial({ color: '#ff0000' , wireframe: true})
 const mesh = new THREE.Mesh(geometry, material) 
 scene.add(mesh)
 
