@@ -1,6 +1,15 @@
 import * as THREE from 'three';
 import './style.css'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+import {gsap}from 'gsap'
+import { GUI } from 'lil-gui'
+// Debug UI
+const gui = new GUI({
+    width: 300,
+    title: 'Debug UI',
+    closeFolders: true
+})
+gui.close()
 
 // Cursor
 const cursor = {
@@ -15,22 +24,32 @@ window.addEventListener('mousemove', (event) => {
 // Scene
 const scene = new THREE.Scene()
 
-const geometry = new THREE.BufferGeometry()
-
-const count = 50
-const positionArray = new Float32Array(count*3*3)
-for (let i=0; i< count *3*3; i++) {
-    positionArray[i] = (Math.random() - 0.5) * 4
-}
-
-const positionAttribute = new THREE.BufferAttribute(positionArray, 3)
-geometry.setAttribute('position', positionAttribute)
-
-
-geometry.setAttribute('position', positionAttribute)
-const material = new THREE.MeshBasicMaterial({ color: '#ff0000' , wireframe: true})
+// Red Cube
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: '#ff0000' })
 const mesh = new THREE.Mesh(geometry, material) 
 scene.add(mesh)
+
+const params = {
+  spin: () => {
+    gsap.to(mesh.rotation, {
+      y: mesh.rotation.y + Math.PI * 2,
+      duration: 1,
+      ease: "power2.inOut"
+    })
+  }
+}
+//Debug
+gui.add(mesh.position, 'y').min(-3).max(3).step(0.01).name('y')
+gui.add(mesh.position, 'z').min(-3).max(3).step(0.01).name('z')
+gui.add(mesh.position, 'x').min(-3).max(3).step(0.01).name('x')
+gui.add(mesh, 'visible')
+gui.add(material, 'wireframe')
+gui.addColor(material, 'color').name('color of cube')
+gui.add(params, 'spin')
+
+
+
 
 // Axes Helper
 const axesHelper = new THREE.AxesHelper(2)
