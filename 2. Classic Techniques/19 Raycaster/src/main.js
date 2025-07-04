@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
+import { cloneUniformsGroups } from 'three/src/renderers/shaders/UniformsUtils.js'
 
 /**
  * Base
@@ -37,6 +38,10 @@ object3.position.x = 2
 
 scene.add(object1, object2, object3)
 
+// Raycaster
+const raycaster = new THREE.Raycaster()
+
+
 /**
  * Sizes
  */
@@ -44,6 +49,13 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+
+// Mouse
+const mouse = new THREE.Vector2()
+window.addEventListener('mousemove', (event) => {
+  mouse.x = event.clientX / sizes.width *2 -1
+  mouse.y = - (event.clientY / sizes.height) *2 +1  
+})
 
 window.addEventListener('resize', () =>
 {
@@ -86,9 +98,50 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const clock = new THREE.Clock()
 
+let currentIntersect = null
+
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+
+    // animate objects
+    object1.position.y = Math.sin(elapsedTime * 0.3) * 1.5
+    object2.position.y = Math.sin(elapsedTime * 0.8) * 1.5
+    object3.position.y = Math.sin(elapsedTime * 1.4) * 1.5
+
+    
+    
+    // Mouse raycaster
+    raycaster.setFromCamera(mouse, camera)
+    const objectsToTest = [object1, object2, object3]
+    const intersects = raycaster.intersectObjects(objectsToTest)
+    for(const object of objectsToTest) {
+      object.material.color.set('#ff0000')
+    }
+
+    for(const intersect of intersects) {
+      intersect.object.material.color = new THREE.Color('#0000ff')
+    }
+
+    // Mouse enter and leave event
+    if(intersects.length) {
+       if(currentIntersect === null) {
+        console.log('mouse enter')
+       }
+       currentIntersect = intersects[0]
+    } else {
+      if(currentIntersect) {
+        console.log('mouse leave')
+      }
+       currentIntersect = null
+    }
+
+    // Mouse click event
+    window.addEventListener('click', () => {
+      if(currentIntersect) {
+        console.log('click')
+      }
+    })
 
     // Update controls
     controls.update()
