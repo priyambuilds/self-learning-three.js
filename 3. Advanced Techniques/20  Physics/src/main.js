@@ -7,6 +7,23 @@ import CANNON from 'cannon'
  * Debug
  */
 const gui = new dat.GUI()
+const debugObject = {}
+debugObject.createSphere = () => {
+    createSphere(Math.random()*0.5, {x: (Math.random()-0.5)*3, y: 3, z: (Math.random()-0.5)*3})
+}
+gui.add(debugObject, 'createSphere')
+
+debugObject.createBox = () => {
+    createBox(
+        Math.random(),
+        Math.random(),
+        Math.random(),
+        {
+            x: (Math.random()-0.5)*3, 
+            y: 3, 
+            z: (Math.random()-0.5)*3})
+}
+gui.add(debugObject, 'createBox')
 
 /**
  * Base
@@ -143,16 +160,15 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 // Utils
 const objectToUpdate = []
-
+const sphereGeometry = new THREE.SphereGeometry(1, 20, 20)
+const sphereMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture
+})
 const createSphere = (radius, position) => {
-    const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(),
-        new THREE.MeshStandardMaterial({
-            metalness: 0.3,
-            roughness: 0.4,
-            envMap: environmentMapTexture
-        })
-    )
+    const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial)
+    mesh.scale.set(radius, radius, radius)
     mesh.castShadow = true
     mesh.position.copy(position)
     scene.add(mesh)
@@ -175,6 +191,39 @@ const createSphere = (radius, position) => {
     })
 }
 createSphere(0.5, { x: 0, y: 3, z: 0 })
+
+// Box
+const boxGeometry = new THREE.SphereGeometry(1, 1, 1)
+const boxMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture
+})
+const createBox = (width, hight, depth, position) => {
+    const mesh = new THREE.Mesh(boxGeometry, boxMaterial)
+    mesh.scale.set(width, hight, depth)
+    mesh.castShadow = true
+    mesh.position.copy(position)
+    scene.add(mesh)
+
+    // Cannonjs body
+    const shape = new CANNON.Box(new CANNON.Vec3(width * 0.5, hight * 0.5, depth * 0.5))
+    const body = new CANNON.Body({
+        mass: 1,
+        position: new CANNON.Vec3(0, 3, 0),
+        shape,
+        material: defaultMaterial
+    })
+    body.position.copy(position)
+    world.addBody(body)
+
+    // Save in objects to update
+    objectToUpdate.push({
+        mesh,
+        body
+    })
+}
+
 /**
  * Animate
  */
@@ -192,7 +241,9 @@ const tick = () =>
     world.step(1/60, deltaTime, 3)
 
     // Update objects
-    
+    for(const object of objectToUpdate) {
+        object.mesh.position.copy(object.body.position)
+    }
 
     // Update controls
     controls.update()
