@@ -2,6 +2,9 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js' 
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+
 
 /**
  * Base
@@ -14,6 +17,32 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+// Models
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('./src/static/draco/')
+const gltfLoader = new GLTFLoader()
+gltfLoader.setDRACOLoader(dracoLoader)
+let mixer = null
+gltfLoader.load(
+    './src/static/models/Fox/glTF/Fox.gltf',
+    (gltf) => {
+        // while(gltf.scene.children.length) {
+        //     scene.add(gltf.scene.children[0])
+        // }
+
+        // const children = {...gltf.scene.children}
+        // for(const child in children){
+        //     scene.add(children[child])
+        // }
+
+        mixer = new THREE.AnimationMixer(gltf.scene)
+        const action = mixer.clipAction(gltf.animations[2])
+        action.play()
+        gltf.scene.scale.set(0.025, 0.025, 0.025)
+        scene.add(gltf.scene)
+    },
+)
 
 /**
  * Floor
@@ -36,7 +65,7 @@ scene.add(floor)
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 4)
 directionalLight.castShadow = true
 directionalLight.shadow.mapSize.set(1024, 1024)
 directionalLight.shadow.camera.far = 15
@@ -105,6 +134,11 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    // Update mixer
+    if (mixer!== null) {
+        mixer.update(deltaTime)
+    }
 
     // Update controls
     controls.update()
