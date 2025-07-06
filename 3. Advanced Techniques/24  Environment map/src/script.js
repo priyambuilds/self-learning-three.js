@@ -7,6 +7,7 @@ import {EXRLoader} from 'three/examples/jsm/loaders/EXRLoader.js'
 import {GroundedSkybox} from 'three/examples/jsm/objects/GroundedSkybox.js'
 
 //Loader
+const textureLoader = new THREE.TextureLoader()
 const gltfLoader = new GLTFLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 const rgbeLoader = new RGBELoader()
@@ -74,19 +75,48 @@ gui.add(scene, 'backgroundIntensity').min(0).max(10).step(0.001).name('backgroun
 // )
 
 // Ground projected skybox
-rgbeLoader.load('./src/static/environmentMaps/2/2k.hdr',
-    (environmentMap) => {
+// rgbeLoader.load('./src/static/environmentMaps/2/2k.hdr',
+//     (environmentMap) => {
+//         environmentMap.mapping = THREE.EquirectangularReflectionMapping
+//         scene.environment = environmentMap
+
+//         //Skybox
+//         const skybox = new GroundedSkybox(environmentMap, 15, 70)
+//         skybox.position.y = 15
+//         scene.add(skybox)
+
+//     }
+// )
+
+// Real time enviornment map
+const environmentMap = textureLoader.load('./src/static/environmentMaps/blockadesLabsSkybox/interior_views_cozy_wood_cabin_with_cauldron_and_p.jpg',
+    () => {
         environmentMap.mapping = THREE.EquirectangularReflectionMapping
-        scene.environment = environmentMap
-
-        //Skybox
-        const skybox = new GroundedSkybox(environmentMap, 15, 70)
-        skybox.position.y = 15
-        scene.add(skybox)
-
+        environmentMap.colorSpace = THREE.SRGBColorSpace
+        scene.background = environmentMap
     }
 )
 
+// Holy donut
+const holdyDonut = new THREE.Mesh(
+    new THREE.TorusGeometry(8, 0.5),
+    new THREE.MeshBasicMaterial({
+        color: new THREE.Color(10, 4, 2),
+    })
+)
+holdyDonut.layers.enable(1)
+holdyDonut.position.y = 3.5
+scene.add(holdyDonut)
+
+// Cube render target
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+    type: THREE.HalfFloatType,
+})
+scene.environment = cubeRenderTarget.texture
+
+// CubeCamera
+const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget)
+cubeCamera.layers.set(1)
 /**
  * Torus Knot
  */
@@ -165,6 +195,12 @@ const tick = () =>
 {
     // Time
     const elapsedTime = clock.getElapsedTime()
+
+    // Real time env map
+    if(holdyDonut) {
+        holdyDonut.rotation.x = Math.sin(elapsedTime) * Math.PI
+        cubeCamera.update(renderer, scene)
+    }
 
     // Update controls
     controls.update()
