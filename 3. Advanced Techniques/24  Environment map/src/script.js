@@ -44,7 +44,7 @@ gui.add(scene, 'backgroundIntensity').min(0).max(10).step(0.001).name('backgroun
 // scene.background = environmentMap
 
 // HDR (RGBE) Equirectangular
-rgbeLoader.load('./src/static/environmentMaps/0/2k.hdr', 
+rgbeLoader.load('./src/static/environmentMaps/blender2k2.hdr', 
     (environmentMap) => {
         environmentMap.mapping = THREE.EquirectangularReflectionMapping
         scene.background = environmentMap
@@ -58,11 +58,12 @@ rgbeLoader.load('./src/static/environmentMaps/0/2k.hdr',
 const torusKnot = new THREE.Mesh(
     new THREE.TorusKnotGeometry(1, 0.4, 100, 16),
     new THREE.MeshStandardMaterial({
-        roughtness: 0.3,
         metalness: 1,
-        color: 0xaaaaaa
+        roughness: 0.2,
+        color: 0xaaaaaa,
     })
 )
+scene.add(torusKnot)
 torusKnot.position.y = 4
 torusKnot.position.x = -4
 scene.add(torusKnot)
