@@ -3,11 +3,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js'
-import { getTextureIndex } from 'three/src/nodes/TSL.js'
+import {EXRLoader} from 'three/examples/jsm/loaders/EXRLoader.js'
+import {GroundedSkybox} from 'three/examples/jsm/objects/GroundedSkybox.js'
+
 //Loader
 const gltfLoader = new GLTFLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 const rgbeLoader = new RGBELoader()
+const exrLoader = new EXRLoader()
 /**
  * Base
  */
@@ -44,11 +47,43 @@ gui.add(scene, 'backgroundIntensity').min(0).max(10).step(0.001).name('backgroun
 // scene.background = environmentMap
 
 // HDR (RGBE) Equirectangular
-rgbeLoader.load('./src/static/environmentMaps/blender2k2.hdr', 
+// rgbeLoader.load('./src/static/environmentMaps/blender2k2.hdr', 
+//     (environmentMap) => {
+//         environmentMap.mapping = THREE.EquirectangularReflectionMapping
+//         scene.background = environmentMap
+//         scene.environment = environmentMap
+//     }
+// )
+
+// HDR (EXR) Equirectangular
+// exrLoader.load('./src/static/environmentMaps/nvidiaCanvas-4k.exr',
+//     (environmentMap) => {
+//         environmentMap.mapping = THREE.EquirectangularReflectionMapping
+//         scene.background = environmentMap
+//         scene.environment = environmentMap
+//     })
+
+// LDR Equirectangular
+// const environmentMap = textureLoader.load('./src/static/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg',
+//     () => {
+//         environmentMap.mapping = THREE.EquirectangularReflectionMapping
+//         environmentMap.colorSpace = THREE.SRGBColorSpace
+//         scene.background = environmentMap
+//         scene.environment = environmentMap
+//     }
+// )
+
+// Ground projected skybox
+rgbeLoader.load('./src/static/environmentMaps/2/2k.hdr',
     (environmentMap) => {
         environmentMap.mapping = THREE.EquirectangularReflectionMapping
-        scene.background = environmentMap
         scene.environment = environmentMap
+
+        //Skybox
+        const skybox = new GroundedSkybox(environmentMap, 15, 70)
+        skybox.position.y = 15
+        scene.add(skybox)
+
     }
 )
 
