@@ -48,7 +48,7 @@ gui
     .step(0.001)
 
 // HDR (RGBE) equirectangular
-rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) =>
+rgbeLoader.load('./src/static/environmentMaps/0/2k.hdr', (environmentMap) =>
 {
     environmentMap.mapping = THREE.EquirectangularReflectionMapping
 
@@ -56,12 +56,34 @@ rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) =>
     scene.environment = environmentMap
 })
 
+// Directional Light
+const directionalLight = new THREE.DirectionalLight('#ffffff', 1)
+directionalLight.position.set(3, 7, 6)
+scene.add(directionalLight)
+
+gui.add(directionalLight, 'intensity').min(0).max(10).step(0.001).name('lightIntensity')
+gui.add(directionalLight.position, 'x').min(- 5).max(5).step(0.001).name('lightX')
+gui.add(directionalLight.position, 'y').min(- 5).max(5).step(0.001).name('lightY')
+gui.add(directionalLight.position, 'z').min(- 5).max(5).step(0.001).name('lightZ')
+
+// Shadows
+directionalLight.castShadow = true
+gui.add(directionalLight, 'castShadow')
+
+// Camera Helper
+const directionalLightHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+scene.add(directionalLightHelper)
+
+// Target
+directionalLight.position.set(0.25, 3, - 2.25)
+
+
 /**
  * Models
  */
 // Helmet
 gltfLoader.load(
-    '/models/FlightHelmet/glTF/FlightHelmet.gltf',
+    './src/static/models/FlightHelmet/glTF/FlightHelmet.gltf',
     (gltf) =>
     {
         gltf.scene.scale.set(10, 10, 10)
@@ -111,10 +133,27 @@ controls.enableDamping = true
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+// Tone Mapping
+renderer.toneMapping = THREE.ReinhardToneMapping
+renderer.toneMappingExposure = 2
+gui.add(renderer, 'toneMapping', {
+    No: THREE.NoToneMapping,
+    Linear: THREE.LinearToneMapping,
+    Reinhard: THREE.ReinhardToneMapping,
+    Cineon: THREE.Cineon,
+    ACESFilmic: THREE.ACESFilmicToneMapping
+})
+gui.add(renderer, 'toneMappingExposure').min(0).max(10).step(0.001).name('toneMappingExposure')
+
+// Shadows
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFShadowMap
 
 /**
  * Animate
