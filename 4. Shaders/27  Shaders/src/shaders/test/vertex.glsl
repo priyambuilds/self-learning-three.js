@@ -2,8 +2,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 attribute vec3 position;
-void main()
-{   
+
     // float a = 0.455;
     // float b = 0.555;
     // float c = a + b;
@@ -27,11 +26,22 @@ void main()
     // bool isNotTrueAndNotFalse = !isTrue && !isFalse;
     // bool isNotTrueOrNotFalse = !isTrue || !isFalse;
 
-    vec2 foo = vec2(1.0, 2.0);
-    foo.x = 3.0;
-    foo.y = 4.0;
-    foo.xy = vec2(5.0, 6.0);
-    foo *= 2.0; // multiplying each component by 2.0
+    // vec2 foo = vec2(1.0, 2.0);
+    // foo.x = 3.0;
+    // foo.y = 4.0;
+    // foo.xy = vec2(5.0, 6.0);
+    // foo *= 2.0; // multiplying each component by 2.0
+
+    // float lorem() { // function that returns a float
+    //     float a = 1.0;
+    //     float b = 2.0;
+
+    //     return a + b;
+    // }
+
+void main()// called automatically. It does not return anything (void)
+{   
+    // float result = lorem();
 
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 }
