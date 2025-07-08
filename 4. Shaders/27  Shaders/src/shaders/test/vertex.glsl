@@ -1,8 +1,16 @@
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
-attribute vec3 position;
+// uniform mat4 projectionMatrix;
+// uniform mat4 modelViewMatrix;
+// uniform mat4 modelMatrix;
+// uniform mat4 viewMatrix;
+// attribute vec3 position;
+uniform vec2 uFrequency;
+uniform float uTime;
+// attribute vec2 uv;
 
+varying vec2 vuv;
+varying float vElevation;
+// attribute float aRandom;
+// varying float vRandom;
     // float a = 0.455;
     // float b = 0.555;
     // float c = a + b;
@@ -38,10 +46,21 @@ attribute vec3 position;
 
     //     return a + b;
     // }
-
+    // float result = lorem();
 void main()// called automatically. It does not return anything (void)
 {   
-    // float result = lorem();
+    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
 
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    float elevation = sin(modelPosition.x * uFrequency.x - uTime) * 0.1;
+    elevation += sin(modelPosition.y * uFrequency.y - uTime) * 0.1;
+    modelPosition.z += elevation;
+
+    // modelPosition.z = aRandom * 0.1; // wave effect (sin)
+    vec4 viewPosition = viewMatrix * modelPosition;
+    vec4 projectedPosition = projectionMatrix * viewPosition;
+    gl_Position = projectedPosition;
+    // gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    // vRandom = aRandom;
+    vuv = uv;
+    vElevation = elevation;
 }
