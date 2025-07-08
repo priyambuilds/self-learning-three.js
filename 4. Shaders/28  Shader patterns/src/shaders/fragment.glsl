@@ -92,6 +92,9 @@ void main()
     // float strength = length(vUv -0.5);
     // gl_FragColor = vec4(strength, strength, strength, 1.0);
 
+    // float strength = 1.0 - distance(vUv, vec2(0.5));
+    // gl_FragColor = vec4(strength, strength, strength, 1.0);
+
     float strength = 1.0 - distance(vUv, vec2(0.5));
     gl_FragColor = vec4(strength, strength, strength, 1.0);
 
