@@ -1,5 +1,5 @@
 {
-  "name": "27-1-learning-glsl",
+  "name": "4-1-learning-shaders",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,12 +9,11 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.0.3"
+    "vite": "^7.1.2"
   },
   "dependencies": {
     "gsap": "^3.13.0",
     "lil-gui": "^0.20.0",
-    "three": "^0.178.0",
-    "vite-plugin-glsl": "^1.5.1"
+    "three": "^0.179.1"
   }
 }
