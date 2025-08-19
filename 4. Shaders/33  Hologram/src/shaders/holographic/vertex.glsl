@@ -1,3 +1,5 @@
+varying vec3 vPosition;
+
 void main(){
 
     //Position
@@ -5,5 +7,8 @@ void main(){
 
     // Final Position
     gl_Position = projectionMatrix * viewMatrix * modelPosition;
+
+    // varyings
+    vPosition = modelPosition.xyz;
     
 }
