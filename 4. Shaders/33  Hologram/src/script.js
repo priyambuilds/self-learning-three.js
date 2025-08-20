@@ -124,7 +124,7 @@ scene.add(sphere)
 // Suzanne
 let suzanne = null
 gltfLoader.load(
-    '../public/static/suzanne.glb',
+    '/static/suzanne.glb',
     (gltf) =>
     {
         suzanne = gltf.scene

@@ -26,7 +26,7 @@ void main(){
     // holographic stripes
     float holographic = stripes * fresnel;
     holographic += fresnel * 1.25;
-    holographic * fallof;
+    holographic *= fallof;
 
 
     // Final Color
