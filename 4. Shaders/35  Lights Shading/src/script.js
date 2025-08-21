@@ -128,6 +128,36 @@ gltfLoader.load(
     }
 )
 
+// Light helpers
+
+// Directional Light
+const directionaLightHelper = new THREE.Mesh(
+    new THREE.PlaneGeometry(),
+    new THREE.MeshBasicMaterial()
+)
+directionaLightHelper.material.color.setRGB(0.1, 0.1, 1)
+directionaLightHelper.material.side = THREE.DoubleSide
+directionaLightHelper.position.set(0, 0, 3)
+scene.add(directionaLightHelper)
+
+// Point Light 1
+const pointLightHelper = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+)
+pointLightHelper.material.color.setRGB(1, 0.1, 0.1)
+pointLightHelper.position.set(0, 2.5, 0)
+scene.add(pointLightHelper)
+
+// Point Light 2
+const pointLightHelper2 = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.1, 2),
+    new THREE.MeshBasicMaterial()
+)
+pointLightHelper2.material.color.setRGB(0.1, 1.0, 0.5)
+pointLightHelper2.position.set(2, 2, 2)
+scene.add(pointLightHelper2)
+
 /**
  * Animate
  */
