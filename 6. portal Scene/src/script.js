@@ -33,15 +33,43 @@ dracoLoader.setDecoderPath('draco/')
 const gltfLoader = new GLTFLoader()
 gltfLoader.setDRACOLoader(dracoLoader)
 
-/**
- * Object
- */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
-)
+// Textures
+const bakedTexture = textureLoader.load('./static/baked.jpg')
+bakedTexture.flipY = false
+bakedTexture.colorSpace = THREE.SRGBColorSpace 
 
-scene.add(cube)
+// Materials
+
+// Baed material
+const bakedMaterial = new THREE.MeshBasicMaterial({map: bakedTexture})
+
+// Light material
+const poleLightMaterial = new THREE.MeshBasicMaterial({color: 0xffffe5})
+const portalLightMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
+
+// Model
+// Model
+gltfLoader.load(
+    './static/portal.glb',
+    (gltf) => {
+        // Apply materials correctly with type checking
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                // Set specific materials based on name
+                if (child.name === 'Circle') {
+                    child.material = portalLightMaterial
+                } else if (child.name === 'LightA' || child.name === 'LightB') {
+                    child.material = poleLightMaterial
+                } else {
+                    // Default to baked material for everything else
+                    child.material = bakedMaterial
+                }
+            }
+        })
+        
+        scene.add(gltf.scene)
+    }
+)
 
 /**
  * Sizes
@@ -89,6 +117,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.outputColorSpace = THREE.SRGBColorSpace
 
 /**
  * Animate
